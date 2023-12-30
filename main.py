@@ -1,6 +1,6 @@
-import CustomGraph.Graph as cg
+import CustomStructures.MyGraph as cg
 
-my_graph = cg.CustomGraph()
+my_graph = cg.MyGraph()
 my_graph.add_node(1, custom_attributes={'name': 'Oradea'})
 my_graph.add_node(2, custom_attributes={'name': 'Zerind'})
 my_graph.add_node(3, custom_attributes={'name': 'Arad'})
