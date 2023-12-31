@@ -11,8 +11,8 @@ def simple_treesearch(problem, space):
         return { 'error': True, 'message': 'The initial state does not exist', 'solution': None }
     
     # Adding neighbor nodes to the frontier
-    [frontier.put(neighbor) for neighbor in space.neighbors(initial_state_node.node_id)]
-
+    [frontier.put(space.nodes[neighbor]['data']) for neighbor in space.neighbors(initial_state_node['data'].node_id)]
+    
     goal_state_id = problem['end_state_id']
     
     while True:
@@ -23,11 +23,12 @@ def simple_treesearch(problem, space):
         
         # Validating if the next node of frontier is the goal
         leaf_node = frontier.get()
+        print(f'Passing through Node ID: {leaf_node.node_id}, attributes: {leaf_node.custom_attributes}')
         if leaf_node.node_id == goal_state_id:
             return { 'error': False, 'message': 'Solution Found', 'solution': leaf_node}
         
         # Expanding leaf node and adding them to the frontier
-        [frontier.put(neighbor) for neighbor in space.neighbors(initial_state_node.node_id)]
+        [frontier.put(space.nodes[neighbor]['data']) for neighbor in space.neighbors(leaf_node.node_id)]
         
 
         
