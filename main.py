@@ -1,6 +1,6 @@
 import CustomStructures.MyGraph as cg
 
-from AIAlgorithms.treesearch import simple_treesearch
+from AIAlgorithms.treesearch import simple_treesearch, simple_graphsearch
 
 
 # ========================================== [DEFINING SPACE]
@@ -46,9 +46,21 @@ problem_space.add_edges_from([(18,19)])
 problem_space.add_edges_from([(19,20)])
 
 # ========================================== [SIMPLE TREE SEARCH]
-problem1 = {
+print("======================== [Simple Tree Search]")
+problem = {
     'init_state_id': 3,
     'end_state_id': 12
 }
-solution = simple_treesearch(problem=problem1, space=problem_space)
-print(solution)
+print(f"Problem: {problem}")
+solution = simple_treesearch(problem=problem, space=problem_space)
+print(f"Solution {solution}")
+
+# ========================================== [SIMPLE GRAPH SEARCH]
+print("======================== [Simple Graph Search]")
+problem = {
+    'init_state_id': 3,
+    'end_state_id': 12
+}
+print(f"Problem: {problem}")
+solution = simple_graphsearch(problem=problem, space=problem_space)
+print(f"Solution {solution}")
