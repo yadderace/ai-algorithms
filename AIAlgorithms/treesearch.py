@@ -1,4 +1,6 @@
-from queue import Queue
+from queue import Queue, PriorityQueue
+
+import utils
 
 def simple_treesearch(problem, space):
 
@@ -71,7 +73,7 @@ def breadth_first_search(problem, space):
     
     # Initializing frontier and explored nodes
     frontier = Queue()
-    frontier.put(initial_state_node.node_id)
+    frontier.put(initial_state_node)
     explored_nodes = []
 
     while True:
@@ -95,4 +97,44 @@ def breadth_first_search(problem, space):
                     return { 'error': False, 'message': 'Solution Found', 'solution': leaf_node}
                 
                 frontier.put(leaf_node.node_id)
+
+def uniform_cost_search(problem, space):
     
+    initial_state_node = space.nodes[problem['init_state_id']]['data']
+    goal_state_id = problem['end_state_id']
+
+    # Initializing frontier and explored nodes
+    frontier = PriorityQueue()
+    frontier.put((0, initial_state_node))
+    explored_nodes = []
+
+    while True:
+
+        # Validating if there's any node in the frontier
+        if frontier.qsize() == 0:
+            return { 'error': True, 'message': 'There is not solution', 'solution': None }
+        
+        # Getting a node to validate from the frontier
+        current_node = frontier.get()[1]
+
+        # Validating if it's the goal node
+        print(f'Passing through Node ID: {current_node.node_id}, attributes: {current_node.custom_attributes}')
+        if(current_node.node_id == goal_state_id):
+            return { 'error': False, 'message': 'Solution Found', 'solution': current_node}
+        
+        explored_nodes.append(current_node)
+
+        # Passing through leaf nodes from current_node
+        for child_node_id in space.neighbors(current_node):
+            leaf_node = space.nodes[child_node_id]['data']
+
+            # Adding leaf node to frontier if it wasn't added to explored or frontier
+            if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for n in list(frontier.queue)]):
+                step_cost = space.get_edge_data(current_node.node_id, leaf_node.node_id)['weight']
+                frontier.put((step_cost, leaf_node))
+            
+            # Replacing node in frontier if step cost is lower
+            elif (leaf_node.node_id in [n.node_id for n in list(frontier.queue)]) and :
+
+
+        
