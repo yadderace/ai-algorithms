@@ -1,6 +1,5 @@
 from queue import Queue, PriorityQueue
-
-import utils
+import AIAlgorithms.utils as utils
 
 def simple_treesearch(problem, space):
 
@@ -75,7 +74,7 @@ def breadth_first_search(problem, space):
     frontier = Queue()
     frontier.put(initial_state_node)
     explored_nodes = []
-
+    
     while True:
 
         # Validating if there's any node in the frontier
@@ -87,16 +86,16 @@ def breadth_first_search(problem, space):
         explored_nodes.append(current_node)
 
         # Passing through leaf nodes from current_node
-        for child_node_id in space.neighbors(current_node):
+        for child_node_id in space.neighbors(current_node.node_id):
             
             leaf_node = space.nodes[child_node_id]['data']
-            if(leaf_node.node_id not in explored_nodes) and (leaf_node.node_id not in list(frontier.queue)):
+            if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for n in list(frontier.queue)]):
                 
                 print(f'Passing through Node ID: {leaf_node.node_id}, attributes: {leaf_node.custom_attributes}')
                 if(leaf_node.node_id == goal_state_id):
                     return { 'error': False, 'message': 'Solution Found', 'solution': leaf_node}
                 
-                frontier.put(leaf_node.node_id)
+                frontier.put(leaf_node)
 
 def uniform_cost_search(problem, space):
     
@@ -115,8 +114,8 @@ def uniform_cost_search(problem, space):
             return { 'error': True, 'message': 'There is not solution', 'solution': None }
         
         # Getting a node to validate from the frontier
-        current_node = frontier.get()[1]
-
+        priority, current_node = frontier.get()
+        
         # Validating if it's the goal node
         print(f'Passing through Node ID: {current_node.node_id}, attributes: {current_node.custom_attributes}')
         if(current_node.node_id == goal_state_id):
@@ -125,16 +124,17 @@ def uniform_cost_search(problem, space):
         explored_nodes.append(current_node)
 
         # Passing through leaf nodes from current_node
-        for child_node_id in space.neighbors(current_node):
+        for child_node_id in space.neighbors(current_node.node_id):
             leaf_node = space.nodes[child_node_id]['data']
-
-            # Adding leaf node to frontier if it wasn't added to explored or frontier
-            if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for n in list(frontier.queue)]):
-                step_cost = space.get_edge_data(current_node.node_id, leaf_node.node_id)['weight']
-                frontier.put((step_cost, leaf_node))
+            step_cost = space.get_edge_data(current_node.node_id, leaf_node.node_id)['weight']
+            path_cost = current_node.path_cost + step_cost
             
-            # Replacing node in frontier if step cost is lower
-            elif (leaf_node.node_id in [n.node_id for n in list(frontier.queue)]) and :
-
-
-        
+            # Adding leaf node to frontier if it wasn't added to explored or frontier
+            if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for p,n in list(frontier.queue)]):
+                leaf_node.path_cost = path_cost
+                frontier.put((path_cost, leaf_node))
+            
+            # Replacing node in frontier if path cost is lower
+            elif (leaf_node.node_id in [n.node_id for p,n in list(frontier.queue)]) and (path_cost < utils.peek_from_queue(frontier, leaf_node.node_id).path_cost):
+                utils.peek_from_queue(frontier, leaf_node.node_id).path_cost = path_cost
+                utils.update_priority(frontier, leaf_node.node_id, path_cost)
