@@ -133,3 +133,14 @@ problem_space = creating_graph()
 print(f"Problem: {problem}")
 solution = ai_alg.uniform_cost_search(problem=problem, space=problem_space)
 print(f"Solution {solution}")
+
+# ========================================== [DEPTH LIMITED SEARCH]
+print("======================== [Depth Limited Search]")
+problem = {
+    'init_state_id': 3,
+    'end_state_id': 10
+}
+problem_space = creating_graph()
+print(f"Problem: {problem}")
+result = ai_alg.depth_limited_search(problem=problem, space=problem_space, limit=5)
+print(f"Solution {result}")

@@ -97,6 +97,7 @@ def breadth_first_search(problem, space):
                 
                 frontier.put(leaf_node)
 
+
 def uniform_cost_search(problem, space):
     
     initial_state_node = space.nodes[problem['init_state_id']]['data']
@@ -138,3 +139,40 @@ def uniform_cost_search(problem, space):
             elif (leaf_node.node_id in [n.node_id for p,n in list(frontier.queue)]) and (path_cost < utils.peek_from_queue(frontier, leaf_node.node_id).path_cost):
                 utils.peek_from_queue(frontier, leaf_node.node_id).path_cost = path_cost
                 utils.update_priority(frontier, leaf_node.node_id, path_cost)
+
+def recursive_depth_limited_search(node, problem, space, limit):
+    goal_state_id = problem['end_state_id']
+
+    print(f'Passing through Node ID: {node.node_id}, attributes: {node.custom_attributes}')
+    if(node.node_id == goal_state_id):
+        return { 'cutoff': False, 'failure': False, 'solution': node}
+    
+    elif(limit == 0):
+        print("Limit Reached")
+        return { 'cutoff': True, 'failure': False, 'solution': None }
+    
+    else:
+        cutoff_ocurred = False
+
+        # Passing through child nodes from current_node
+        for child_node_id in space.neighbors(node.node_id): 
+            child_node = space.nodes[child_node_id]['data']
+            result = recursive_depth_limited_search(child_node, problem, space, limit - 1)
+            
+            # Validating if it reached the limit
+            if(result['cutoff']):
+                cutoff_ocurred = True
+            elif(not result['failure']):
+                return result
+            
+        if cutoff_ocurred:
+            return { 'cutoff': True, 'failure': False, 'solution': None }
+        else:
+            return { 'cutoff': True, 'failure': True, 'solution': None }
+
+def depth_limited_search(problem, space, limit = None):
+
+    initial_state_node = space.nodes[problem['init_state_id']]['data']
+
+    return recursive_depth_limited_search(initial_state_node, problem, space, limit)
+
