@@ -140,6 +140,7 @@ def uniform_cost_search(problem, space):
                 utils.peek_from_queue(frontier, leaf_node.node_id).path_cost = path_cost
                 utils.update_priority(frontier, leaf_node.node_id, path_cost)
 
+
 def recursive_depth_limited_search(node, problem, space, limit):
     goal_state_id = problem['end_state_id']
 
@@ -170,9 +171,44 @@ def recursive_depth_limited_search(node, problem, space, limit):
         else:
             return { 'cutoff': True, 'failure': True, 'solution': None }
 
+
 def depth_limited_search(problem, space, limit = None):
 
     initial_state_node = space.nodes[problem['init_state_id']]['data']
 
     return recursive_depth_limited_search(initial_state_node, problem, space, limit)
 
+
+def greedy_best_first_search(problem, space):
+
+    initial_state_node = space.nodes[problem['init_state_id']]['data']
+    goal_state_id = problem['end_state_id']
+
+    # Initializing frontier and explored nodes
+    frontier = PriorityQueue()
+    frontier.put((0, initial_state_node))
+    explored_nodes = []
+
+    while True:
+
+        # Validating if there's any node in the frontier
+        if frontier.qsize() == 0:
+            return { 'error': True, 'message': 'There is not solution', 'solution': None }
+        
+        # Getting a node to validate from the frontier
+        priority, current_node = frontier.get()
+        
+        # Validating if it's the goal node
+        print(f'Passing through Node ID: {current_node.node_id}, attributes: {current_node.custom_attributes}')
+        if(current_node.node_id == goal_state_id):
+            return { 'error': False, 'message': 'Solution Found', 'solution': current_node}
+        
+        explored_nodes.append(current_node)
+
+        # Passing through leaf nodes from current_node
+        for child_node_id in space.neighbors(current_node.node_id):
+            leaf_node = space.nodes[child_node_id]['data']
+            
+            # Adding leaf node to frontier if it wasn't added to explored or frontier
+            if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for p,n in list(frontier.queue)]):
+                frontier.put((leaf_node.informed_heuristic, leaf_node))
