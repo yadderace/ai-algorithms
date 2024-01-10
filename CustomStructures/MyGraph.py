@@ -5,6 +5,7 @@ class GraphNode():
     def __init__(self, node_id, custom_attributes):
         self.node_id = node_id
         self.path_cost = 0
+        self.estimated_cost = 0
         self.neighbor_nodes = {}
         self.informed_heuristic = custom_attributes['informed_heuristic']
         self.custom_attributes = custom_attributes
