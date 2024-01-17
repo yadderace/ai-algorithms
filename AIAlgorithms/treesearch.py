@@ -213,6 +213,7 @@ def greedy_best_first_search(problem, space):
             if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for p,n in list(frontier.queue)]):
                 frontier.put((leaf_node.informed_heuristic, leaf_node))
 
+
 def a_star_search(problem, space):
     initial_state_node = space.nodes[problem['init_state_id']]['data']
     goal_state_id = problem['end_state_id']
@@ -232,7 +233,7 @@ def a_star_search(problem, space):
         priority, current_node = frontier.get()
         
         # Validating if it's the goal node
-        print(f'Passing through Node ID: {current_node.node_id}, attributes: {current_node.custom_attributes}')
+        print(f'Passing through Node ID: {current_node.node_id}, Estimated Cost: {current_node.estimated_cost}, attributes: {current_node.custom_attributes}')
         if(current_node.node_id == goal_state_id):
             return { 'error': False, 'message': 'Solution Found', 'solution': current_node}
         
@@ -244,15 +245,57 @@ def a_star_search(problem, space):
             step_cost = space.get_edge_data(current_node.node_id, leaf_node.node_id)['weight']
             g_cost = current_node.path_cost + step_cost # Path Cost
             h_cost = leaf_node.informed_heuristic # Heuristic Cost
+            print(f"Name: {leaf_node.custom_attributes['name']}, step_cost: {step_cost}, g_cost: {g_cost}, h_cost: {h_cost}")
             f_cost = g_cost + h_cost
 
             
             # Adding leaf node to frontier if it wasn't added to explored or frontier
             if(leaf_node.node_id not in [n.node_id for n in explored_nodes]) and (leaf_node.node_id not in [n.node_id for p,n in list(frontier.queue)]):
                 leaf_node.estimated_cost = f_cost
+                leaf_node.path_cost = g_cost
                 frontier.put((f_cost, leaf_node))
             
             # Replacing node in frontier if path cost is lower
             elif (leaf_node.node_id in [n.node_id for p,n in list(frontier.queue)]) and (f_cost < utils.peek_from_queue(frontier, leaf_node.node_id).estimated_cost):
                 utils.peek_from_queue(frontier, leaf_node.node_id).estimated_cost = f_cost
                 utils.update_priority(frontier, leaf_node.node_id, f_cost)
+
+def recursive_iterative_a_star_search(node, problem, space, limit):
+    
+    goal_state_id = problem['end_state_id']
+
+    # Validating if it's the goal node
+    print(f'Passing through Node ID: {node.node_id}, attributes: {node.custom_attributes}')
+    if(node.node_id == goal_state_id):
+        return { 'error': False, 'message': 'Solution Found', 'solution': node }
+    
+    successors = []
+    # Passing through leaf nodes from current_node
+    for child_node_id in space.neighbors(node.node_id):
+        leaf_node = space.nodes[child_node_id]['data']
+        successors.append(leaf_node)
+    
+    for node_successor in successors:
+        step_cost = space.get_edge_data(node_successor.node_id, node.node_id)['weight']
+        g_cost = node.path_cost + step_cost # Path Cost
+        h_cost = node_successor.informed_heuristic # Heuristic Cost
+        f_cost = g_cost + h_cost
+        node_successor.estimated_cost = max(f_cost, node.estimated_cost)
+        node_successor.path_cost = g_cost
+
+    while True:
+        best_node = min(successors, key=lambda suc: suc.estimated_cost)
+        if(best_node.estimated_cost > limit):
+            return { 'error': True, 'message': 'Solution No Found', 'solution': None }
+        
+        sorted_successors = sorted(successors, key=lambda suc: suc.estimated_cost)
+        second_best_node = sorted_successors[1]
+
+        result = recursive_iterative_a_star_search(best_node, problem, space, min(second_best_node.estimated_cost, limit))
+
+        if not result['error']:
+            return result
+
+def iterative_a_star_search(problem, space):
+    initial_state_node = space.nodes[problem['init_state_id']]['data']
+    recursive_iterative_a_star_search(initial_state_node, problem, space, 10000000)

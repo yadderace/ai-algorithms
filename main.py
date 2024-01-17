@@ -169,3 +169,17 @@ problem_space = creating_graph()
 print(f"Problem: {problem}")
 result = ai_alg.a_star_search(problem=problem, space=problem_space)
 print(f"Solution {result}")
+
+
+# ========================================== [ITERATIVE A* SEARCH]
+# This is an informed search. The heuristic is in the attribute informed_heuristic in each node and its added to path cost to get an estimation. It is recursive
+print("======================== [Greedy Best First Search]")
+problem = {
+    'init_state_id': 3,
+    'end_state_id': 13 # This state should have 0 as informed heuristic because is the goal
+}
+problem_space = creating_graph()
+print(f"Problem: {problem}")
+result = ai_alg.iterative_a_star_search(problem=problem, space=problem_space)
+print(f"Solution {result}")
+
