@@ -1,5 +1,5 @@
 from queue import Queue, PriorityQueue
-from CustomStructures.MyTree import MyTree
+from CustomStructures.MyTree import MyTree, MyTreeNode
 
 import AIAlgorithms.utils as utils
 
@@ -266,8 +266,9 @@ def a_star_search(problem, space):
 def recursive_iterative_a_star_search(node, problem, space, limit):
     
     goal_state_id = problem['end_state_id']
+    space_node = space.nodes[goal_state_id]
     # Validating if it's the goal node
-    print(f'Passing through Node ID: {node.node_id}, attributes: {node.custom_attributes}')
+    print(f'Passing through Node ID: {space_node.node_id}, attributes: {space_node.custom_attributes}')
     if(node.node_id == goal_state_id):
         return { 'error': False, 'message': 'Solution Found', 'solution': node }
     
@@ -275,11 +276,12 @@ def recursive_iterative_a_star_search(node, problem, space, limit):
     # Passing through leaf nodes from current_node
     for child_node_id in space.neighbors(node.node_id):
         leaf_node = space.nodes[child_node_id]['data']
+        child_node = MyTreeNode('Child', identifier=leaf_node.node_id, g_cost=)
         successors.append(leaf_node)
     
     for node_successor in successors:
         step_cost = space.get_edge_data(node_successor.node_id, node.node_id)['weight']
-        g_cost = node.path_cost + step_cost # Path Cost
+        g_cost = node.g_cost + step_cost # Path Cost
         h_cost = node_successor.informed_heuristic # Heuristic Cost
         f_cost = g_cost + h_cost
         node_successor.estimated_cost = max(f_cost, node.estimated_cost)
@@ -304,5 +306,6 @@ def iterative_a_star_search(problem, space):
     my_tree_search = MyTree()
     my_tree_search.create_node('Root', identifier=initial_state_node.node_id, g_cost=0, h_cost=initial_state_node.informed_heuristic)
     
-    print(my_tree_search.get_node(initial_state_node.node_id))
-    # recursive_iterative_a_star_search(initial_state_node, problem, space, 10000000)
+    root_node = my_tree_search.get_node(initial_state_node.node_id)
+
+    recursive_iterative_a_star_search(root_node, problem, space, 10000000)
