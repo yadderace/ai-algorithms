@@ -1,5 +1,8 @@
 from queue import Queue, PriorityQueue
+from CustomStructures.MyTree import MyTree
+
 import AIAlgorithms.utils as utils
+
 
 def simple_treesearch(problem, space):
 
@@ -263,7 +266,6 @@ def a_star_search(problem, space):
 def recursive_iterative_a_star_search(node, problem, space, limit):
     
     goal_state_id = problem['end_state_id']
-
     # Validating if it's the goal node
     print(f'Passing through Node ID: {node.node_id}, attributes: {node.custom_attributes}')
     if(node.node_id == goal_state_id):
@@ -298,4 +300,9 @@ def recursive_iterative_a_star_search(node, problem, space, limit):
 
 def iterative_a_star_search(problem, space):
     initial_state_node = space.nodes[problem['init_state_id']]['data']
-    recursive_iterative_a_star_search(initial_state_node, problem, space, 10000000)
+    
+    my_tree_search = MyTree()
+    my_tree_search.create_node('Root', identifier=initial_state_node.node_id, g_cost=0, h_cost=initial_state_node.informed_heuristic)
+    
+    print(my_tree_search.get_node(initial_state_node.node_id))
+    # recursive_iterative_a_star_search(initial_state_node, problem, space, 10000000)
