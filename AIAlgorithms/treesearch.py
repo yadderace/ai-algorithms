@@ -266,30 +266,34 @@ def a_star_search(problem, space):
 def recursive_iterative_a_star_search(node, problem, space, limit):
     
     goal_state_id = problem['end_state_id']
-    space_node = space.nodes[goal_state_id]
+    space_node = space.nodes[node.node_id]['data']
     # Validating if it's the goal node
     print(f'Passing through Node ID: {space_node.node_id}, attributes: {space_node.custom_attributes}')
     if(node.node_id == goal_state_id):
-        return { 'error': False, 'message': 'Solution Found', 'solution': node }
+        return { 'error': False, 'message': 'Solution Found', 'solution': space_node }
     
     successors = []
     # Passing through leaf nodes from current_node
     for child_node_id in space.neighbors(node.node_id):
         leaf_node = space.nodes[child_node_id]['data']
-        child_node = MyTreeNode('Child', identifier=leaf_node.node_id, g_cost=)
-        successors.append(leaf_node)
+        
+        # Calculating heuristics
+        step_cost = space.get_edge_data(leaf_node.node_id, node.node_id)['weight']
+        g_cost = node.g_cost + step_cost # Path Cost
+        h_cost = leaf_node.informed_heuristic # Heuristic Cost
+        
+        child_node = MyTreeNode('Child', identifier=node.tree.nodes, node_id = leaf_node.node_id, g_cost=g_cost, h_cost=h_cost, tree=node.tree)
+        node.add_child(child_node)
+
+        successors.append(child_node)
     
     for node_successor in successors:
-        step_cost = space.get_edge_data(node_successor.node_id, node.node_id)['weight']
-        g_cost = node.g_cost + step_cost # Path Cost
-        h_cost = node_successor.informed_heuristic # Heuristic Cost
-        f_cost = g_cost + h_cost
-        node_successor.estimated_cost = max(f_cost, node.estimated_cost)
-        node_successor.path_cost = g_cost
-
+        node_successor.estimated_cost = max(node_successor.f_cost, node.estimated_cost)
+        
     while True:
         best_node = min(successors, key=lambda suc: suc.estimated_cost)
         if(best_node.estimated_cost > limit):
+            node.estimated_cost = best_node.estimated_cost
             return { 'error': True, 'message': 'Solution No Found', 'solution': None }
         
         sorted_successors = sorted(successors, key=lambda suc: suc.estimated_cost)
@@ -304,8 +308,8 @@ def iterative_a_star_search(problem, space):
     initial_state_node = space.nodes[problem['init_state_id']]['data']
     
     my_tree_search = MyTree()
-    my_tree_search.create_node('Root', identifier=initial_state_node.node_id, g_cost=0, h_cost=initial_state_node.informed_heuristic)
+    my_tree_search.create_node('Root', identifier=0, node_id=initial_state_node.node_id, g_cost=0, h_cost=initial_state_node.informed_heuristic)
     
-    root_node = my_tree_search.get_node(initial_state_node.node_id)
+    root_node = my_tree_search.get_node(0)
 
-    recursive_iterative_a_star_search(root_node, problem, space, 10000000)
+    return recursive_iterative_a_star_search(root_node, problem, space, 10000000)
