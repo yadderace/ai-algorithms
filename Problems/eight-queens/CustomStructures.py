@@ -16,6 +16,13 @@ class MyTreeNode(Node):
     #         self.tree.add_node(child_node, parent = self.identifier)
     #         self.tree.nodes += 1
 
+    def get_child_node(self, node_id):
+        childs = self.tree.children(self.identifier)
+        
+        for node in childs:
+            if node.node_id == node_id:
+                return node
+        return None
 
 
 class MyTree(Tree):

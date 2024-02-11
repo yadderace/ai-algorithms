@@ -135,7 +135,7 @@ class ChessBoard:
         for direction in range(1, 9):
             next_identifier = self.move_queen_without_action(queen_number, direction)
             if next_identifier:
-                next_moves.append(next_identifier)
+                next_moves.append({'identifier': next_identifier, 'queen': queen_number, 'direction': direction})
 
         return next_moves
     
@@ -155,10 +155,10 @@ class ChessBoard:
             cost -= 2
             
             # Check diagonals formed by the current queen
-            # for j in range(i + 1, self.n_queens):
-            #     row_j, col_j = self.queens_positions[j]
-            #     if abs(row - row_j) == abs(col - col_j):
-            #         cost += 2
+            for j in range(i + 1, self.n_queens):
+                row_j, col_j = self.queens_positions[j]
+                if abs(row - row_j) == abs(col - col_j):
+                    cost += 2
 
         # Each pair of queens is counted twice, so divide by 2
         return cost // 2
