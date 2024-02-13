@@ -142,37 +142,36 @@ class ChessBoard:
     def cost_queens(self, identifier):
         cost = 0
 
-        board = self._construct_board_from_identifier(identifier)
+        board, queens_positions = self._construct_board_from_identifier(identifier)
         
         for i in range(self.n_queens):
-            row, col = self.queens_positions[i]
-
+            row, col = queens_positions[i]
             # Count queens in the same row
             cost += sum(1 for c in range(self.n_dim) if board[row][c] != 0)
             # Count queens in the same column
             cost += sum(1 for r in range(self.n_dim) if board[r][col] != 0)
             # Subtract 2 to account for counting the current queen twice
-            cost -= 2
-            
+            cost -= 2  
+
             # Check diagonals formed by the current queen
             for j in range(i + 1, self.n_queens):
-                row_j, col_j = self.queens_positions[j]
+                row_j, col_j = queens_positions[j]
                 if abs(row - row_j) == abs(col - col_j):
                     cost += 2
-
-        # Each pair of queens is counted twice, so divide by 2
         return cost // 2
 
     def _construct_board_from_identifier(self, identifier):
         board = [[0] * self.n_dim for _ in range(self.n_dim)]
+        queens_positions = []
         # Parse the identifier string to get the positions of queens
         index = 0
         for row in range(self.n_dim):
             for col in range(self.n_dim):
                 if identifier[index] == '1':
                     board[row][col] = 1
+                    queens_positions.append((row, col))
                 index += 1
-        return board
+        return board, queens_positions
 
     def get_identifier(self, board=None):
         if board is None:

@@ -62,8 +62,6 @@ class Problem:
         # Updating the current node
         self.current_node = self.current_node.get_child_node(node_id = action_identifier)
 
-
-
     def hill_climbing_search(self, print_actions=False, print_board=False, limit_stuck_steps = 10):
 
         if(self.tree_space is None):
@@ -101,6 +99,8 @@ class Problem:
             current_node = self.current_node
 
             if(print_actions == True):
+                print(f"--->")
+                print(f"Cost: {self.chess_board.cost_queens(best_child['alternative_identifier'])}")
                 print(f"Action: {best_child}")
             if(print_board == True):
                 self.print_current_state()
@@ -124,7 +124,3 @@ if __name__ == "__main__":
 
     print("===================== [Hill Climbing Search]")
     problem_instance.hill_climbing_search(print_actions=True, print_board=True)
-
-    
-
-

@@ -9,12 +9,6 @@ class MyTreeNode(Node):
         self.h_cost = h_cost
         self.f_cost = g_cost + h_cost
         self.tree = tree
-    
-    # def add_child(self, tag, node_id = None, data=None, g_cost=0, h_cost=0):
-    #     if(self.tree is not None):
-    #         child_node = MyTreeNode(tag=tag, identifier=self.tree.nodes, node_id = node_id, data=data, g_cost=g_cost, h_cost=h_cost, tree=self.tree)
-    #         self.tree.add_node(child_node, parent = self.identifier)
-    #         self.tree.nodes += 1
 
     def get_child_node(self, node_id):
         childs = self.tree.children(self.identifier)
