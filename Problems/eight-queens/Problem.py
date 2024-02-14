@@ -1,3 +1,5 @@
+import random, math
+
 from ChessBoard import ChessBoard  # Assuming your ChessBoard class is defined in chess_board.py
 
 from CustomStructures import MyTree
@@ -105,8 +107,52 @@ class Problem:
             if(print_board == True):
                 self.print_current_state()
 
-                
+    def action_acceptance(diff_energy = 0, temperature = 0):
+        r = random.random()
+        if(r < math.exp((diff_energy * -1)/temperature)):
+            return True
+        return False
+
+    def simmulated_annealing(self, alpha_cool = 0.9, initial_temperature = 100, min_temperature = 1, initial_energy = 100, min_energy = 0, max_spaces = 1, print_actions=False, print_board = True):
+        
+        # Get the node for the initial state as set it as the current_node
+        current_node = self.current_node
+
+        # Setting the max value of temperature
+        current_temperature = initial_temperature
+
+        # Seting the current energy
+        current_energy = initial_energy
+
+        while (current_temperature > min_temperature) and (current_energy > min_energy):
+
+            # Get all the childs from the current_state and select the ones with the lowest cost
+            childs = self.create_child_nodes(current_node ,max_spaces)
+            min_cost = min(child['cost'] for child in childs)
+            best_childs = [child for child in childs if child['cost'] == min_cost]
             
+            # From best child selects a random child
+            best_child = random.choice(best_childs) 
+
+            # Calculating difference of energy
+            diff_energy = current_energy - min_cost
+
+            if(Problem.action_acceptance(diff_energy, current_temperature)):
+                
+                # Executes the action for the best child
+                self.execute_action(action_identifier=best_child['alternative_identifier'], queen_number=best_child['queen'], direction=best_child['direction'], steps=best_child['steps'])
+                current_node = self.current_node
+
+                if(print_actions == True):
+                    print(f"--->")
+                    print(f"Cost: {self.chess_board.cost_queens(best_child['alternative_identifier'])}")
+                    print(f"Action: {best_child}")
+                if(print_board == True):
+                    self.print_current_state()
+                current_energy = min_cost
+
+            current_temperature = current_temperature / alpha_cool
+
 
 
 
@@ -122,5 +168,8 @@ if __name__ == "__main__":
     problem_instance.start_board()
     problem_instance.print_current_state()
 
-    print("===================== [Hill Climbing Search]")
-    problem_instance.hill_climbing_search(print_actions=True, print_board=True, max_spaces=n_dim)
+    #print("===================== [Hill Climbing Search]")
+    #problem_instance.hill_climbing_search(print_actions=True, print_board=True, max_spaces=n_dim)
+
+    print("===================== [Simmulated Annealing Search]")
+    problem_instance.simmulated_annealing(print_actions=True, print_board=True, max_spaces=n_dim)
