@@ -231,12 +231,15 @@ class ChessBoard:
         return new_row, new_col
     
     def is_valid_move(self, queen_number, direction,  steps):
-
         row, col = self.queens_positions[queen_number - 1]
-
+        
         # Determine the new position after the move
         new_row, new_col = self.get_new_positions(row, col, direction, steps)
-
+        
+        # Veriying if there's a new position for the queen
+        if(new_row == None or new_col == None):
+            return False
+        
         # Check if the new position is within the board boundaries and not occupied by another queen
         if not (0 <= new_row < self.n_dim and 0 <= new_col < self.n_dim and self.board[new_row][new_col] == 0):
             return False
