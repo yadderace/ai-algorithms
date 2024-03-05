@@ -16,8 +16,9 @@ class Problem:
         self.current_node = None
         
     def start_board(self):
+        print(self.n_dim)
         # Initializing the board
-        self.chess_board = ChessBoard(n_dim, n_queens)
+        self.chess_board = ChessBoard(self.n_dim, self.n_queens)
         self.chess_board.place_queens()  # Place the queens
         current_state_identifier = self.chess_board.get_identifier()
         
@@ -154,22 +155,17 @@ class Problem:
             current_temperature = current_temperature / alpha_cool
 
 
-
-
-
-
-
 # Example usage:
-if __name__ == "__main__":
-    n_dim = 8
-    n_queens = 8
-    problem_instance = Problem(n_dim, n_queens)
+# if __name__ == "__main__":
+#     n_dim = 8
+#     n_queens = 8
+#     problem_instance = Problem(n_dim, n_queens)
     
-    problem_instance.start_board()
-    problem_instance.print_current_state()
+#     problem_instance.start_board()
+#     problem_instance.print_current_state()
 
-    #print("===================== [Hill Climbing Search]")
-    #problem_instance.hill_climbing_search(print_actions=True, print_board=True, max_spaces=n_dim)
+#     #print("===================== [Hill Climbing Search]")
+#     #problem_instance.hill_climbing_search(print_actions=True, print_board=True, max_spaces=n_dim)
 
-    print("===================== [Simmulated Annealing Search]")
-    problem_instance.simmulated_annealing(print_actions=True, print_board=True, max_spaces=n_dim)
+#     print("===================== [Simmulated Annealing Search]")
+#     problem_instance.simmulated_annealing(print_actions=True, print_board=True, max_spaces=n_dim)
