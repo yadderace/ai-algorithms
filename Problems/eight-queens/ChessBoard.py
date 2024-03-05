@@ -47,10 +47,12 @@ class ChessBoard:
 
     def _generate_random_queens(self):
         queens_positions = []
-        for _ in range(self.n_queens):
+        while len(queens_positions) < self.n_queens:
             row = random.randint(0, self.n_dim - 1)
             col = random.randint(0, self.n_dim - 1)
-            queens_positions.append((row, col))
+            # Check if the generated position is already in queens_positions
+            if (row, col) not in queens_positions:
+                queens_positions.append((row, col))
         return queens_positions
 
     def move_queen(self, queen_number, direction, steps = 1):

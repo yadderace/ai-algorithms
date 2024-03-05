@@ -16,7 +16,6 @@ class Problem:
         self.current_node = None
         
     def start_board(self):
-        print(self.n_dim)
         # Initializing the board
         self.chess_board = ChessBoard(self.n_dim, self.n_queens)
         self.chess_board.place_queens()  # Place the queens
@@ -64,6 +63,12 @@ class Problem:
 
         # Updating the current node
         self.current_node = self.current_node.get_child_node(node_id = action_identifier)
+
+    def get_stats(self, tree_node):
+        level_node = self.tree_space.level(tree_node.identifier)
+        tree_nodes = self.tree_space.size()
+
+        return {'level_node': level_node, 'tree_nodes': tree_nodes}
 
     def hill_climbing_search(self, print_actions=False, print_board=False, limit_stuck_steps = 10 , max_spaces = 1):
 
@@ -153,6 +158,10 @@ class Problem:
                 current_energy = min_cost
 
             current_temperature = current_temperature / alpha_cool
+        
+        return current_node
+        
+
 
 
 # Example usage:
