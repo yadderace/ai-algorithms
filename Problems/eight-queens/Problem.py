@@ -86,9 +86,13 @@ class Problem:
             childs = self.create_child_nodes(current_node ,max_spaces)
             best_child = min(childs, key=lambda suc: suc['cost'])
 
+            # If it founds the minimum cost it should return the solution
+            if (current_node.f_cost == 0):
+                return {'last_node': current_node, 'found_solution': True, 'got_stuck': False }
+            
             # If all the other childs have higher cost it should return the current node
-            if (current_node.f_cost == 0) | (best_child['cost'] > current_node.f_cost):
-                return current_node
+            elif (best_child['cost'] > current_node.f_cost):
+                return {'last_node': current_node, 'found_solution': False, 'got_stuck': False }
             
             # If the best child has the same cost, it moves to that child but will increase the stuck steps
             elif (current_node.f_cost == best_child['cost']) & (stuck_steps < limit_stuck_steps):
@@ -96,7 +100,7 @@ class Problem:
             
             # If the quantity of stuck steps reached the limit the it will return the current node
             elif (stuck_steps == limit_stuck_steps):
-                return current_node
+                return {'last_node': current_node, 'found_solution': False, 'got_stuck': True }
             
             # Else, just restart the stuck steps because there's an optimal option
             else:
@@ -119,7 +123,7 @@ class Problem:
             return True
         return False
 
-    def simmulated_annealing(self, alpha_cool = 0.9, initial_temperature = 100, min_temperature = 1, initial_energy = 100, min_energy = 0, max_spaces = 1, print_actions=False, print_board = True):
+    def simmulated_annealing(self, alpha_cool = 0.9, initial_temperature = 100, min_temperature = 1, initial_energy = 100, min_energy = 0, max_spaces = 1, limit_stuck_steps = 10, print_actions=False, print_board = True):
         
         # Get the node for the initial state as set it as the current_node
         current_node = self.current_node
@@ -129,6 +133,9 @@ class Problem:
 
         # Seting the current energy
         current_energy = initial_energy
+
+        # Setting initial stuck steps
+        stuck_steps = 0
 
         while (current_temperature > min_temperature) and (current_energy > min_energy):
 
@@ -142,7 +149,17 @@ class Problem:
 
             # Calculating difference of energy
             diff_energy = current_energy - min_cost
+            if(diff_energy == 0):
+                stuck_steps += 1
+            else:
+                stuck_steps = 0
+            
+            if(min_cost == 0):
+                return {'last_node': current_node, 'found_solution': True, 'got_stuck': True}
 
+            if(stuck_steps == limit_stuck_steps):
+                return {'last_node': current_node, 'found_solution': False, 'got_stuck': True }
+            
             if(Problem.action_acceptance(diff_energy, current_temperature)):
                 
                 # Executes the action for the best child
@@ -157,9 +174,10 @@ class Problem:
                     self.print_current_state()
                 current_energy = min_cost
 
+            
             current_temperature = current_temperature / alpha_cool
         
-        return current_node
+        return {'last_node': current_node, 'found_solution': False, 'got_stuck': False }
         
 
 
