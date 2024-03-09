@@ -83,3 +83,81 @@ class FourInLine:
 
         # This should never be reached if the previous checks are correct
         return False
+    
+    def check_win(self, player_symbol):
+        """
+        Check if the specified player has won the game.
+
+        Args:
+            player_symbol (str): Symbol representing the player's disc.
+
+        Returns:
+            list: List of positions where the player has won (empty list if the player has not won).
+        """
+        # Check for horizontal lines
+        for row in range(self.rows):
+            for col in range(self.cols - 3):
+                if all(self.board[row][col + i] == player_symbol for i in range(4)):
+                    return [(row, col + i) for i in range(4)]
+
+        # Check for vertical lines
+        for col in range(self.cols):
+            for row in range(self.rows - 3):
+                if all(self.board[row + i][col] == player_symbol for i in range(4)):
+                    return [(row + i, col) for i in range(4)]
+
+        # Check for diagonal lines (top-left to bottom-right)
+        for row in range(self.rows - 3):
+            for col in range(self.cols - 3):
+                if all(self.board[row + i][col + i] == player_symbol for i in range(4)):
+                    return [(row + i, col + i) for i in range(4)]
+
+        # Check for diagonal lines (bottom-left to top-right)
+        for row in range(3, self.rows):
+            for col in range(self.cols - 3):
+                if all(self.board[row - i][col + i] == player_symbol for i in range(4)):
+                    return [(row - i, col + i) for i in range(4)]
+
+        # No winning positions found
+        return None
+    
+
+if __name__ == "__main__":
+    # Initialize the game
+    game = FourInLine()
+
+    # Game loop
+    current_player = 1
+    while True:
+        # Display the current game board
+        board_string = game.get_board_string()
+        print(board_string)
+
+        # Determine the symbol of the current player
+        player_symbol = game.player1_symbol if current_player == 1 else game.player2_symbol
+
+        # Prompt the current player to make a move
+        while True:
+            column_selected = input(f"Player {current_player}, please choose a column (1-{game.cols}): ")
+            try:
+                column_selected = int(column_selected)
+                break
+            except ValueError:
+                print("Invalid input. Please enter a valid column number.")
+
+        # Make the move
+        if game.make_move(player_symbol, column_selected):
+            # Check if the current player has won
+            if game.check_win(player_symbol):
+                print(f"Player {current_player} wins!")
+                break
+
+            # Check for a draw
+            if all(' ' not in row for row in game.board):
+                print("It's a draw!")
+                break
+
+            # Switch to the next player
+            current_player = 1 if current_player == 2 else 2
+        else:
+            print("Invalid move. Please try again.")
