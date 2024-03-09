@@ -155,7 +155,7 @@ class Problem:
                 stuck_steps = 0
             
             if(min_cost == 0):
-                return {'last_node': current_node, 'found_solution': True, 'got_stuck': True}
+                return {'last_node': current_node, 'found_solution': True, 'got_stuck': False}
 
             if(stuck_steps == limit_stuck_steps):
                 return {'last_node': current_node, 'found_solution': False, 'got_stuck': True }
