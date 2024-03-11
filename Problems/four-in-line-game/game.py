@@ -4,6 +4,16 @@ class FourInLine:
     DEFAULT_PLAYER1_SYMBOL = 'X'
     DEFAULT_PLAYER2_SYMBOL = 'O'
 
+    @property
+    def board(self):
+        """
+        Get the current state of the game board.
+
+        Returns:
+            list: Matrix representing the current state of the game board.
+        """
+        return self.board
+
     def __init__(self, rows=DEFAULT_ROWS, cols=DEFAULT_COLS, player1_symbol=DEFAULT_PLAYER1_SYMBOL, player2_symbol=DEFAULT_PLAYER2_SYMBOL):
         """
         Initialize the Connect Four game.
