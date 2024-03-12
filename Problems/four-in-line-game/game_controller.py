@@ -62,7 +62,7 @@ class GameServer:
                     player2_socket.sendall(b"Your symbol is the same as Player 1's. Choose another symbol: ")
                     player2_symbol = self.get_player_symbol(player2_socket)
                 
-                self.start_game(self.clients_waiting.pop(), self.clients_waiting.pop())
+                self.start_game(player1_socket, player1_symbol, player2_socket, player2_symbol)
         
         client_socket.close()
 
@@ -157,8 +157,12 @@ class GameServer:
             player2_socket (socket.socket): Player 2 socket object.
             player2_symbol (str): Player 2's chosen symbol.
         """
-        player1_socket.sendall(b"Game is starting! You are Player 1.")
-        player2_socket.sendall(b"Game is starting! You are Player 2.")
+        try:
+            player1_socket.sendall(b"Game is starting! You are Player 1.")
+            player2_socket.sendall(b"Game is starting! You are Player 2.")
+        except OSError as e:
+            print("Error occurred while sending data:", e)
+            return
 
         # Initialize the FourInLine game
         game = FourInLine()
