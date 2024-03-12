@@ -197,6 +197,49 @@ class GameServer:
             print("Server interrupted. Closing connections.")
             self.server_socket.close()
 
+# -------------------------------------------------------------------------------
+
+def run_client():
+    host = '127.0.0.1'  # Server's IP address
+    port = 5555         # Server's port
+
+    # Create a socket object
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        # Connect to the server
+        client_socket.connect((host, port))
+
+        # Receive the initial message from the server
+        print(client_socket.recv(1024).decode())
+
+        # Start communicating with the server
+        while True:
+            # Get user input and send it to the server
+            user_input = input("Enter your message: ")
+            client_socket.sendall(user_input.encode())
+
+            # Receive and print the server's response
+            response = client_socket.recv(1024).decode()
+            print("Server:", response)
+
+    except KeyboardInterrupt:
+        print("Client closed.")
+    finally:
+        # Close the socket connection
+        client_socket.close()
+
+def main():
+    choice = input("Do you want to run the client (C) or the server (S)? ").upper()
+
+    if choice == "C":
+        run_client()
+    elif choice == "S":
+        # Run the server code
+        game_server = GameServer()
+        game_server.start_server()
+    else:
+        print("Invalid choice. Please enter 'C' for client or 'S' for server.")
+
 if __name__ == "__main__":
-    game_server = GameServer()
-    game_server.start_server()
+    main()
