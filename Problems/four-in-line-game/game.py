@@ -5,7 +5,7 @@ class FourInLine:
     DEFAULT_PLAYER2_SYMBOL = 'O'
 
     @property
-    def board(self):
+    def game_board(self):
         """
         Get the current state of the game board.
 
@@ -131,43 +131,3 @@ class FourInLine:
         # No winning positions found
         return None
     
-
-if __name__ == "__main__":
-    # Initialize the game
-    game = FourInLine()
-
-    # Game loop
-    current_player = 1
-    while True:
-        # Display the current game board
-        board_string = game.get_board_string()
-        print(board_string)
-
-        # Determine the symbol of the current player
-        player_symbol = game.player1_symbol if current_player == 1 else game.player2_symbol
-
-        # Prompt the current player to make a move
-        while True:
-            column_selected = input(f"Player {current_player}, please choose a column (1-{game.cols}): ")
-            try:
-                column_selected = int(column_selected)
-                break
-            except ValueError:
-                print("Invalid input. Please enter a valid column number.")
-
-        # Make the move
-        if game.make_move(player_symbol, column_selected):
-            # Check if the current player has won
-            if game.check_win(player_symbol):
-                print(f"Player {current_player} wins!")
-                break
-
-            # Check for a draw
-            if all(' ' not in row for row in game.board):
-                print("It's a draw!")
-                break
-
-            # Switch to the next player
-            current_player = 1 if current_player == 2 else 2
-        else:
-            print("Invalid move. Please try again.")
