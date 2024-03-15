@@ -1,8 +1,12 @@
+import random
+
 class FourInLine:
     DEFAULT_ROWS = 6
     DEFAULT_COLS = 7
     DEFAULT_PLAYER1_SYMBOL = 'X'
     DEFAULT_PLAYER2_SYMBOL = 'O'
+    
+    EMPTY_SPACE = ' '
 
     @property
     def game_board(self):
@@ -41,7 +45,7 @@ class FourInLine:
         self.cols = cols
         self.player1_symbol = player1_symbol
         self.player2_symbol = player2_symbol
-        self.board = [[' ' for _ in range(cols)] for _ in range(rows)]  # Initialize the game board
+        self.board = [[FourInLine.EMPTY_SPACE for _ in range(cols)] for _ in range(rows)]  # Initialize the game board
 
     def get_board_string(self, print_board=False):
         """
@@ -87,7 +91,7 @@ class FourInLine:
 
         # Update the game board with the player's move
         for row in range(self.rows - 1, -1, -1):
-            if self.board[row][column_selected - 1] == ' ':
+            if self.board[row][column_selected - 1] == FourInLine.EMPTY_SPACE:
                 self.board[row][column_selected - 1] = player_symbol
                 return True
 
@@ -131,3 +135,18 @@ class FourInLine:
         # No winning positions found
         return None
     
+    def create_random_board(self, moves):
+        """
+        Fill the game board with a random sequence of moves.
+
+        Args:
+            moves (int): Number of moves to make.
+
+        Returns:
+            None
+        """
+        player_symbols = [self.player1_symbol, self.player2_symbol]
+        for _ in range(moves):
+            player_symbol = player_symbols[_ % 2]
+            column_selected = random.randint(1, self.cols)
+            self.make_move(player_symbol, column_selected)
