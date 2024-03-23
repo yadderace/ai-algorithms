@@ -21,11 +21,12 @@ class AIEntity:
         self.difficulty_level = difficulty_level
         self.player_symbol = player_symbol
 
-    def get_line(self, start, line_size, direction):
+    def get_line(self, board, start, line_size, direction):
         """
         Get a line starting from the given position, moving in the specified direction.
 
         Args:
+            board (list of lists): The game board represented as a 2D list.
             start (tuple): The starting position (row, col).
             line_size (int): The size of the line to evaluate.
             direction (int): The direction to move (1 for horizontal, 2 for vertical,
@@ -33,6 +34,9 @@ class AIEntity:
 
         Returns:
             list: A list containing elements of the evaluated line.
+
+        Raises:
+            ValueError: If the direction is invalid.
         """
         row, col = start
         line = []
@@ -51,17 +55,18 @@ class AIEntity:
 
         # Move along the line and collect elements
         for _ in range(line_size):
-            line.append(self.four_in_line.game_board[row][col])
+            line.append(board[row][col])
             row += step_row
             col += step_col
 
         return line
     
-    def evaluate_board(self):
+    def get_possible_victory_lines(self, board, symbol_player):
         """
         Evaluate the game board to find lines of the specified player's symbol.
-        
+
         Args:
+            board (list of lists): The game board represented as a 2D list.
             symbol_player (str): Symbol representing the player's discs.
 
         Returns:
@@ -72,18 +77,20 @@ class AIEntity:
         to identify lines of the specified player's symbol. The lines must contain at least one symbol of the player
         and may include empty spaces ('.') in a sequence of four. Each line is represented as an object containing
         the following attributes:
-        
+
         - start_tuple (tuple): The starting position of the line as a tuple (row, col).
         - direction (str): The direction of the line ('horizontal', 'vertical', 'positive_diagonal', 'negative_diagonal').
         - symbol_quantity (int): The number of symbols of the player found in the line.
         """
         symbol_player = self.player_symbol
+        rows = len(board)
+        cols = len(board[0])
         lines_found = []
 
         # Evaluating the board horizontally
-        for row in range(self.four_in_line.rows):
-            for col in range(self.four_in_line.cols - 3):
-                line = self.get_line(start=(row, col), line_size=4, direction=AIEntity.HORIZONTAL)
+        for row in range(rows):
+            for col in range(cols - 3):
+                line = self.get_line(board=board, start=(row, col), line_size=4, direction=AIEntity.HORIZONTAL)
                 
                 if (line.count(symbol_player) >= 1 and line.count(symbol_player) + line.count(FourInLine.EMPTY_SPACE) == 4):
                     lines_found.append({
@@ -93,9 +100,9 @@ class AIEntity:
                     })
         
         # Evaluating the board vertically
-        for col in range(self.four_in_line.cols):
-            for row in range(self.four_in_line.rows - 3):
-                line = self.get_line(start=(row,col), line_size=4, direction=AIEntity.VERTICAL)
+        for col in range(cols):
+            for row in range(rows - 3):
+                line = self.get_line(board=board, start=(row,col), line_size=4, direction=AIEntity.VERTICAL)
 
                 if (line.count(symbol_player) >= 1 and line.count(symbol_player) + line.count(FourInLine.EMPTY_SPACE) == 4):
                     lines_found.append({
@@ -105,9 +112,9 @@ class AIEntity:
                     })
 
         # Evaluating the board for negative diagonals
-        for row in range(3, self.four_in_line.rows):
-            for col in range(3, self.four_in_line.cols):
-                line = self.get_line(start=(row, col), line_size=4, direction=AIEntity.NEGATIVE_DIAGONAL)
+        for row in range(3, rows):
+            for col in range(3, cols):
+                line = self.get_line(board=board, start=(row, col), line_size=4, direction=AIEntity.NEGATIVE_DIAGONAL)
 
                 if (line.count(symbol_player) >= 1 and line.count(symbol_player) + line.count(FourInLine.EMPTY_SPACE) == 4):
                     lines_found.append({
@@ -117,9 +124,9 @@ class AIEntity:
                     })
 
         # Evaluating the board for positive diagonals
-        for row in range(3, self.four_in_line.rows):
-            for col in range(self.four_in_line.cols - 3):
-                line = self.get_line(start=(row, col), line_size=4, direction=AIEntity.POSITIVE_DIAGONAL)
+        for row in range(3, rows):
+            for col in range(cols - 3):
+                line = self.get_line(board=board, start=(row, col), line_size=4, direction=AIEntity.POSITIVE_DIAGONAL)
 
                 if (line.count(symbol_player) >= 1 and line.count(symbol_player) + line.count(FourInLine.EMPTY_SPACE) == 4):
                     lines_found.append({
@@ -140,7 +147,7 @@ def main():
     print(game.get_board_string())
     
     ai_entity_x = AIEntity(four_in_line=game, difficulty_level=1, player_symbol='X')
-    list_x = ai_entity_x.evaluate_board()
+    list_x = ai_entity_x.get_possible_victory_lines(board=game.game_board, symbol_player='X')
     print(list_x)
 
 if __name__ == "__main__":
