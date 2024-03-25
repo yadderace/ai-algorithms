@@ -137,6 +137,20 @@ class AIEntity:
 
         return lines_found
 
+    def calculate_board_value(self, board, symbol_player):
+
+        victory_lines = self.get_possible_victory_lines(board=board, symbol_player=symbol_player)
+        sum_proportion = 0.0
+        
+        for line in victory_lines:
+            if(line['symbol_quantity'] != 4):
+                sum_proportion += (line['symbol_quantity']/4)
+            elif(line['symbol_quantity'] == 4):
+                return 1.0
+        return round(sum_proportion / len(victory_lines), 2)
+
+
+
 
 
 def main():
@@ -147,8 +161,8 @@ def main():
     print(game.get_board_string())
     
     ai_entity_x = AIEntity(four_in_line=game, difficulty_level=1, player_symbol='X')
-    list_x = ai_entity_x.get_possible_victory_lines(board=game.game_board, symbol_player='X')
-    print(list_x)
-
+    board_value = ai_entity_x.calculate_board_value(board=game.game_board, symbol_player='X')
+    print(f"Board Value: {board_value}")
+    
 if __name__ == "__main__":
     main()
