@@ -136,20 +136,32 @@ class AIEntity:
                     })
 
         return lines_found
-
+    
     def calculate_board_value(self, board, symbol_player):
+        """
+        Calculate the value of the game board for the specified player.
 
+        This function calculates the value of the game board for the specified player based on the lines where the player
+        has the potential to achieve victory. The function iterates over all possible victory lines on the board and sums
+        up the proportions of symbols owned by the player in each line. The total sum is divided by the number of lines
+        found to get the average proportion of the player's symbols on the board.
+
+        Args:
+            board (list of lists): The game board represented as a 2D list.
+            symbol_player (str): Symbol representing the player's discs.
+
+        Returns:
+            float: The calculated value of the game board for the specified player, ranging from 0.0 to 1.0.
+        """
         victory_lines = self.get_possible_victory_lines(board=board, symbol_player=symbol_player)
         sum_proportion = 0.0
         
         for line in victory_lines:
-            if(line['symbol_quantity'] != 4):
-                sum_proportion += (line['symbol_quantity']/4)
-            elif(line['symbol_quantity'] == 4):
+            if line['symbol_quantity'] != 4:
+                sum_proportion += (line['symbol_quantity'] / 4)
+            elif line['symbol_quantity'] == 4:
                 return 1.0
         return round(sum_proportion / len(victory_lines), 2)
-
-
 
 
 
