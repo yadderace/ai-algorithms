@@ -1,4 +1,5 @@
 from game import FourInLine
+import random
 
 class AIEntity:
     
@@ -163,6 +164,66 @@ class AIEntity:
                 return 1.0
         return round(sum_proportion / len(victory_lines), 2)
 
+    def make_virtual_move(self, board, column, symbol_player):
+        """
+        Make a virtual move for the specified player on the given board.
+
+        This function adds the player's symbol to the top of the specified column in the board, simulating a move
+        without modifying the original board.
+
+        Args:
+            board (list of lists): The game board represented as a 2D list.
+            column (int): The column in which to make the move.
+            symbol_player (str): Symbol representing the player's discs.
+
+        Returns:
+            list of lists: The new board after making the virtual move.
+        """
+        new_board = [row[:] for row in board]  # Create a deep copy of the board to avoid modifying the original
+
+        # Find the top empty space in the specified column and place the player's symbol there
+        for row in range(len(new_board) - 1, -1, -1):  # Start from the bottom row
+            if new_board[row][column] == FourInLine.EMPTY_SPACE: 
+                new_board[row][column] = symbol_player  
+                break
+
+        return new_board
+
+    def get_best_move(self, board, player_symbol):
+        """
+        Determine the best move for the specified player on the given board.
+
+        This function iterates over each column of the board and calculates the board value after making a move in each
+        column. It then returns the column number that results in the highest board value. If there are multiple moves with
+        the same highest value, it selects one randomly.
+
+        Args:
+            board (list of lists): The game board represented as a 2D list.
+            player_symbol (str): Symbol representing the player's discs.
+
+        Returns:
+            int: The column number representing the best move for the specified player.
+        """
+        best_moves = []
+        best_value = -1
+        
+        for col in range(len(board[0])):
+            # Make a move in the current column
+            new_board = self.make_virtual_move(board, col, player_symbol)
+            
+            # Calculate the board value after making the move
+            board_value = self.calculate_board_value(new_board, player_symbol)
+
+            # Check if the current move has a higher value than the best value found so far
+            if board_value > best_value:
+                best_moves = [(col,best_value)]  # If the current move is the best, update the list of best moves
+                best_value = board_value
+            elif board_value == best_value:
+                best_moves.append((col,best_value))  # If the current move has the same value as the best, add it to the list of best moves
+
+        # Randomly select one of the best moves
+        best_move = random.choice(best_moves)
+        return best_move[0], best_move[1]
 
 
 def main():
@@ -173,8 +234,11 @@ def main():
     print(game.get_board_string())
     
     ai_entity_x = AIEntity(four_in_line=game, difficulty_level=1, player_symbol='X')
-    board_value = ai_entity_x.calculate_board_value(board=game.game_board, symbol_player='X')
-    print(f"Board Value: {board_value}")
+    best_move, board_value = ai_entity_x.get_best_move(board=game.game_board, player_symbol='X')
+    print(f"Best Move: {best_move}, Board Value: {board_value}")
+
+    best_move, board_value = ai_entity_x.get_best_move(board=game.game_board, player_symbol='O')
+    print(f"Best Move: {best_move}, Board Value: {board_value}")
     
 if __name__ == "__main__":
     main()
