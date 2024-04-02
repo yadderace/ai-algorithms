@@ -233,6 +233,12 @@ def main():
     print("Board is ready")
     print(game.get_board_string())
     
+    board_id = game.get_id(game.game_board)
+    print(f"Board ID: {board_id}")
+
+    board_built = game.from_id(board_id, game.rows, game.cols)
+    print(board_built)
+
     ai_entity_x = AIEntity(four_in_line=game, difficulty_level=1, player_symbol='X')
     best_move, board_value = ai_entity_x.get_best_move(board=game.game_board, player_symbol='X')
     print(f"Best Move: {best_move}, Board Value: {board_value}")

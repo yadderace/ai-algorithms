@@ -150,3 +150,53 @@ class FourInLine:
             player_symbol = player_symbols[_ % 2]
             column_selected = random.randint(1, self.cols)
             self.make_move(player_symbol, column_selected)
+
+    @staticmethod
+    def get_id(board, empty_value='#'):
+        """
+        Concatenate all elements of the board into one string, replacing empty spaces with a specified value.
+
+        Args:
+            board (list): List of lists representing the game board.
+            empty_value (str, optional): Value to replace empty spaces (default is '#').
+
+        Returns:
+            str: Concatenated string of all elements in the board.
+        """
+        return ''.join(''.join(empty_value if cell == FourInLine.EMPTY_SPACE else cell for cell in row) for row in board)
+    
+
+    @staticmethod
+    def from_id(id_string, rows, cols, empty_value='#'):
+        """
+        Convert an ID string back to a game board represented as a list of lists.
+
+        Args:
+            id_string (str): ID string representing the game board.
+            rows (int): Number of rows in the game board.
+            cols (int): Number of columns in the game board.
+            empty_value (str, optional): Value representing empty spaces (default is '#').
+
+        Returns:
+            list: List of lists representing the game board.
+
+        Raises:
+            ValueError: If the length of the ID string does not match the expected dimensions of the board
+                        after replacing occurrences of empty_value with a single character placeholder.
+        """
+        
+        expected_length = rows * cols
+        if len(id_string) != expected_length + (len(empty_value) - 1) * id_string.count(empty_value):
+            raise ValueError(f"Length of ID string ({len(id_string)}) does not match expected dimensions ({expected_length})")
+
+        board = []
+        for i in range(0, len(id_string), cols):
+            row = []
+            for j in range(cols):
+                idx = i + j
+                if id_string[idx:idx + len(empty_value)] == empty_value:
+                    row.append(FourInLine.EMPTY_SPACE)
+                else:
+                    row.append(id_string[idx])
+            board.append(row)
+        return board
