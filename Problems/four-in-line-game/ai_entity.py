@@ -226,6 +226,59 @@ class AIEntity:
         return best_move[0], best_move[1]
 
 
+    def actions(self, id_state):
+        """
+        Get a list of possible moves given the board ID representation.
+
+        Args:
+            id_state (str): ID string representing the game board.
+            rows (int): Number of rows in the game board.
+            cols (int): Number of columns in the game board.
+            empty_value (str, optional): Value representing empty spaces (default is '#').
+
+        Returns:
+            list: List of possible moves (column indices) that can be made on the board.
+        """
+        # Convert ID string to board representation
+        board = FourInLine.from_id(id_state, self.game.rows, self.game.cols, empty_value=FourInLine.EMPTY_SPACE)
+
+        # Get available columns for moves
+        available_moves = []
+        for col in range(self.game.rows, self.game.cols):
+            for row in range(self.game.rows - 1, -1, -1):
+                if board[row][col] == FourInLine.EMPTY_SPACE:
+                    available_moves.append(col + 1)
+                    break  # Move found, move to the next column
+        return available_moves
+    
+    def utility(self, id_state, symbol_player):
+        """
+        Calculate the value of the game board for the specified player.
+
+        This function calculates the value of the game board for the specified player based on the lines where the player
+        has the potential to achieve victory. The function iterates over all possible victory lines on the board and sums
+        up the proportions of symbols owned by the player in each line. The total sum is divided by the number of lines
+        found to get the average proportion of the player's symbols on the board.
+
+        Args:
+            board (list of lists): The game board represented as a 2D list.
+            symbol_player (str): Symbol representing the player's discs.
+
+        Returns:
+            float: The calculated value of the game board for the specified player, ranging from 0.0 to 1.0.
+        """
+        board = FourInLine.from_id(id_state, self.game.rows, self.game.cols, empty_value=FourInLine.EMPTY_SPACE)
+        victory_lines = self.get_possible_victory_lines(board=board, symbol_player=symbol_player)
+        sum_proportion = 0.0
+        
+        for line in victory_lines:
+            if line['symbol_quantity'] != 4:
+                sum_proportion += (line['symbol_quantity'] / 4)
+            elif line['symbol_quantity'] == 4:
+                return 1.0
+        return round(sum_proportion / len(victory_lines), 2)
+    
+    
 def main():
     # Initialize the FourInLine game
     game = FourInLine()
