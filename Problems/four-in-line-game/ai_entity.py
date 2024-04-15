@@ -278,6 +278,28 @@ class AIEntity:
                 return 1.0
         return round(sum_proportion / len(victory_lines), 2)
     
+    def result(self, state_id, action, symbol_player):
+        """
+        Get the ID of the new board after the specified player makes a move.
+
+        Args:
+            state_id (str): The ID string representing the current game board.
+            action (int): The column where the player puts the symbol.
+            symbol_player (str): Symbol representing the player's discs.
+
+        Returns:
+            str: The ID string representing the new game board after the player's move.
+        """
+        # Convert state ID to board representation
+        board = FourInLine.from_id(state_id, self.four_in_line.rows, self.four_in_line.cols, empty_value=FourInLine.EMPTY_SPACE)
+
+        # Make a virtual move for the specified player
+        new_board = self.make_virtual_move(board, action, symbol_player)
+
+        # Get the ID of the new board
+        new_board_id = FourInLine.get_id(new_board)
+
+        return new_board_id
     
 def main():
     # Initialize the FourInLine game
