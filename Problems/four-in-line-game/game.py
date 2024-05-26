@@ -18,6 +18,14 @@ class FourInLine:
         """
         return self.board
 
+    @property
+    def player1_symbol(self):
+        return self.player1_symbol
+    
+    @property
+    def player2_symbol(self):
+        return self.player2_symbol
+    
     def __init__(self, rows=DEFAULT_ROWS, cols=DEFAULT_COLS, player1_symbol=DEFAULT_PLAYER1_SYMBOL, player2_symbol=DEFAULT_PLAYER2_SYMBOL):
         """
         Initialize the Connect Four game.

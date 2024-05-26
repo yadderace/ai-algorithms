@@ -225,7 +225,6 @@ class AIEntity:
         best_move = random.choice(best_moves)
         return best_move[0], best_move[1]
 
-
     def actions(self, id_state):
         """
         Get a list of possible moves given the board ID representation.
@@ -301,7 +300,79 @@ class AIEntity:
 
         return new_board_id
     
+    def terminal_test(self, state_id):
+        """
+        Determine if there is a winner in the Four in Line game based on the given state.
+
+        Parameters:
+        state_id (str): A string representing the game board state, where 'X' represents player 1, 
+                        'O' represents player 2, and ' ' represents an empty space.
+
+        Returns:
+        str or None: Returns 'X' if player 1 wins, 'O' if player 2 wins, or None if there is no winner.
+        """
+        
+        rows = self.four_in_line.rows
+        cols = self.four_in_line.cols
+        win_count = 4
+        p1 = self.four_in_line.player1_symbol
+        p2 = self.four_in_line.player2_symbol
+
+        # Convert state_id to a 2D list (board)
+        board = FourInLine.from_id(state_id, rows, cols, empty_value=FourInLine.EMPTY_SPACE)
+
+        def check_line(line):
+            """
+            Check if the given line has a winning combination.
+
+            Parameters:
+            line (list): A list of symbols in the line being checked.
+
+            Returns:
+            str or None: Returns 'X' if player 1 wins in this line, 'O' if player 2 wins, 
+                        or None if there is no winner in this line.
+            """
+            if line == [p1] * win_count:
+                return p1
+            elif line == [p2] * win_count:
+                return p2
+            return None
+
+        # Check for horizontal wins
+        for row in range(rows):
+            for col in range(cols - win_count + 1):
+                result = check_line(board[row][col:col + win_count])
+                if result:
+                    return result
+
+        # Check for vertical wins
+        for col in range(cols):
+            for row in range(rows - win_count + 1):
+                line = [board[row + i][col] for i in range(win_count)]
+                result = check_line(line)
+                if result:
+                    return result
+
+        # Check for diagonal wins (bottom-left to top-right)
+        for row in range(rows - win_count + 1):
+            for col in range(cols - win_count + 1):
+                line = [board[row + i][col + i] for i in range(win_count)]
+                result = check_line(line)
+                if result:
+                    return result
+
+        # Check for diagonal wins (top-left to bottom-right)
+        for row in range(win_count - 1, rows):
+            for col in range(cols - win_count + 1):
+                line = [board[row - i][col + i] for i in range(win_count)]
+                result = check_line(line)
+                if result:
+                    return result
+
+        return None
+
 def main():
+    
     # Initialize the FourInLine game
     game = FourInLine()
     game.create_random_board(moves=15)
